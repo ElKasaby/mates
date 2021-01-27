@@ -115,7 +115,7 @@ passport.use(new LocalStrategy({
     }
   
     // Check if the password is correct
-    const isMatch = await user.isValidPassword(local.password);
+    const isMatch = await user.isValidPassword(password);
   
     // If not, handle it
     if (!isMatch) {
