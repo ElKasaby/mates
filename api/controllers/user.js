@@ -33,12 +33,12 @@ module.exports = {
             })
         }
 
-        // check length of password
-        if(req.body.password.length < 8){
-            return res.status(409).json({
-                message: 'Password must be at least 9 characters'
-            })
-        }
+        // // check length of password
+        // if(req.body.password.length < 8){
+        //     return res.status(409).json({
+        //         message: 'Password must be at least 9 characters'
+        //     })
+        // }
 
 
         //create a new user
