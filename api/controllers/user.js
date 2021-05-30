@@ -17,10 +17,17 @@ module.exports = {
     signup: async (req, res, next)=>{
         const { name, email, password, confirmPassword } = req.body
 
+        //check if there is a user with the same name
+        const foundname = await User.findOne({"local.name": name})
+        if(foundname){
+           return res.status(403).json({
+                error : 'name is already exist'
+            })
+        }
 
         //check if there is a user with the same email
-        const foundUser = await User.findOne({"local.email": email})
-        if(foundUser){
+        const foundemail = await User.findOne({"local.email": email})
+        if(foundemail){
            return res.status(403).json({
                 error : 'Email is already exist'
             })
@@ -33,12 +40,12 @@ module.exports = {
             })
         }
 
-        // // check length of password
-        // if(req.body.password.length < 8){
-        //     return res.status(409).json({
-        //         message: 'Password must be at least 9 characters'
-        //     })
-        // }
+        // check length of password
+        if(req.body.password.length < 8){
+            return res.status(409).json({
+                message: 'Password must be at least 9 characters'
+            })
+        }
 
 
         //create a new user
@@ -52,23 +59,30 @@ module.exports = {
         })  
         await newUser.save()
 
+        
         // Generate the token 
         const token = signToken(newUser)
 
         res.status(200).json({
             token,
-            message: 'done'
+            name: req.body.name,
+            email: req.body.email
         })
 
         
     },
 
     signin: async (req, res, next)=>{
+
+        const user = await User.findOne({ "local.email": req.body.email })
+
         // Generate token
         const token = signToken(req.user)
         res.status(200).json({
-            message: "done login",
-            token
+            token,
+            id: user.id,
+            name: user.local.name,
+            email: user.local.email
         })
     },
 
@@ -86,10 +100,31 @@ module.exports = {
             message:"connect with facebook"
         })
     },
-
-    secret: async (req, res, next)=>{
+    editProfile: async (req, res, next)=>{
+        const profile = await User.findOne({"_id":req.user._id })
+        console.log(profile);
+        // new value
+        await profile.set(req.body).save()
         res.status(200).json({
-            message: 'You now can acsses the private information'
+            message: 'Edit Done',
+            profile
         })
+
+    },
+    profile : async (req, res, next)=>{
+        const profileId = req.params.id
+        const profile = await User.findOne({"_id": profileId})
+        console.log(profile);
+        if(profile){
+            return res.status(200).json({
+                message: 'this is the profile',
+                profile
+            })
+        }
+        res.status(200).json({
+            message: 'this profile is not found',
+        })
+
+
     }
 }

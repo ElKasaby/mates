@@ -2,6 +2,36 @@ const mongoose = require("mongoose")
 const bcrypt = require('bcryptjs')
 
 const userSchema = mongoose.Schema({
+  name: {
+    type: String,
+    require: true
+  },
+  email: {
+    type: String,
+    require: true
+  },
+  password: {
+    type: String,
+    require: true
+  },
+  image: {
+    type:String
+  },
+  bio:{
+    type: String,
+  },
+  phone:{
+    type: String,
+  },
+  address:{
+    type: String,
+  },
+  track:{
+    type: String,
+  },
+  mySkills:{
+    type: String,
+  },
   methods: {
     type: String,
     enum: ['local', 'google', 'facebook']
@@ -10,7 +40,7 @@ const userSchema = mongoose.Schema({
     name: {
       type: String,
       require: true
-  },
+    },
     email: {
       type: String,
       require: true
@@ -19,9 +49,23 @@ const userSchema = mongoose.Schema({
       type: String,
       require: true
     },
-    confirmPassword: {
+    image: {
+      type:String
+    },
+    bio:{
       type: String,
-      require: true
+    },
+    phone:{
+      type: String,
+    },
+    address:{
+      type: String,
+    },
+    track:{
+      type: String,
+    },
+    mySkills:{
+      type: String,
     }
   },
   google: {
@@ -33,6 +77,24 @@ const userSchema = mongoose.Schema({
     },
     email: {
       type: String
+    },
+    image: {
+      type:String
+    },
+    bio:{
+      type: String,
+    },
+    phone:{
+      type: String,
+    },
+    address:{
+      type: String,
+    },
+    track:{
+      type: String,
+    },
+    mySkills:{
+      type: String,
     }
   },
   facebook: {
@@ -44,6 +106,24 @@ const userSchema = mongoose.Schema({
     },
     email: {
       type: String
+    },
+    image: {
+      type:String
+    },
+    bio:{
+      type: String,
+    },
+    phone:{
+      type: String,
+    },
+    address:{
+      type: String,
+    },
+    track:{
+      type: String,
+    },
+    mySkills:{
+      type: String,
     }
   }
 })

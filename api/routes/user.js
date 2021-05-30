@@ -24,6 +24,10 @@ router.route('/oauth/google')
 router.route('/oauth/facebook')
   .post(passportFacebook, UsersController.facebookOAuth);
 
-router.get('/secret',passportJWT, UsersController.secret)
+router.route('/editProfile')
+  .put(passportJWT, UsersController.editProfile);
+
+router.route('/:id/profile')
+  .get(passportJWT, UsersController.profile);
 
 module.exports = router

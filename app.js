@@ -21,9 +21,17 @@ mongoose.connect('mongodb+srv://Kasaby:'+
 //Middlewarees
 app.use(morgan('dev'))
 app.use(bodyParser.json())
+// serve images in directory named images 
+app.use('/images',express.static('images'))
+
 
 //Routes
 app.use('/user',require('./api/routes/user'))
+app.use('/team',require('./api/routes/team'))
+app.use('/post',require('./api/routes/post'))
+app.use('/file',require('./api/routes/file'))
+
+
 
 //start the server
 const port = process.env.PORT || 3000

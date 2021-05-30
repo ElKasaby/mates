@@ -48,13 +48,20 @@ passport.use('googleToken',new GooglePlusTokenStrategy({
     if(existingUser){
       return done(null, existingUser)
     }
+    const image = profile.photos[0].value.substring(0);
+    console.log("image:",image);
+
     // If new account
     const newUSer = new User({
+      name: profile.displayName,
+      email: profile.emails[0].value,
+      image: image,
       method: 'google',
       google: {
         id: profile.id,
         name: profile.displayName,
-        email: profile.emails[0].value
+        email: profile.emails[0].value,
+        image: image
       }
     })
     await newUSer.save()
@@ -79,13 +86,21 @@ passport.use('facebookToken', new FacebookTokenStrategy({
     if(existingUser){
       return done(null, existingUser)
     }
+    const image = profile.photos[0].value.substring(0);
+    console.log("image:",image);
+
+
     // If new account
     const newUSer = new User({
+      name: profile.displayName,
+      email: profile.emails[0].value,
+      image:image,
       method: 'facebook',
       facebook: {
         id: profile.id,
         name: profile.displayName,
-        email: profile.emails[0].value
+        email: profile.emails[0].value,
+        image:image
       }
     })
     await newUSer.save()
