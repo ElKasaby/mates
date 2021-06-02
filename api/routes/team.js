@@ -4,6 +4,8 @@ const router = require('express-promise-router')();
 const mongoose = require('mongoose')
 const passport = require('passport')
 const passportJWT = passport.authenticate('jwt', { session: false });
+const multerConfig = require('../../multer')
+
 
 
 const TeamController = require('../controllers/team');
@@ -11,10 +13,10 @@ const TeamController = require('../controllers/team');
 
 // Out team
 router.route('/')
-  .get();
+  .get(passportJWT, TeamController.getAllTeam);
 
 router.route('/addteam')
-  .post(passportJWT, TeamController.addTeam);
+  .post(passportJWT,multerConfig, TeamController.addTeam);
 
 router.route('/:id/viewMember')
   .get(passportJWT, TeamController.viewMember);
@@ -30,5 +32,7 @@ router.route('/:id/editTeam')
 
 router.route('/:id/deleteTeam')
   .delete(passportJWT, TeamController.deleteTeam);
+
+
 
 module.exports = router

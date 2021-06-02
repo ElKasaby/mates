@@ -12,6 +12,10 @@ const imageUpload = mongoose.Schema({
     url : {
         type: String,
         required : true
+    },
+    uploadOwner: {
+        type:  mongoose.Schema.Types.ObjectId,
+        ref:'user'
     }
 })
 

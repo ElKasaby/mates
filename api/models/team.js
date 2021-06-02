@@ -12,6 +12,9 @@ const teamSchema = mongoose.Schema({
     teamPhoto:{
         type: String
     },
+    url:{
+        type: String,
+    },
     date:{
         type: Date,
         default: Date.now

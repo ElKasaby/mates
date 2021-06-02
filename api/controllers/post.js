@@ -13,6 +13,7 @@ module.exports ={
         const teamId = req.params.teamId
         const post = await Post.find({"team":teamId})
         
+        
         if(post){
             return res.status(200).json({
                 massage: "All posts",
@@ -24,11 +25,15 @@ module.exports ={
         })
     },
     addPost: async(req, res, next)=>{
+        const ownerName = req.user.local.name
+        const ownerImage = req.user.url
         //create a new post
         const newPost = new Post({
             team: req.params.teamId,
             body: req.body.postBody,
-            postOwner: req.user.id
+            postOwner: req.user.id,
+            ownerName: ownerName,
+            ownerImage: ownerImage
         })
         await newPost.save()
         res.status(201).json(newPost)
@@ -69,11 +74,14 @@ module.exports ={
     addReply: async(req, res, next)=>{
         const postId = req.params.postId
         const post = await Post.findById(postId)
-
+        const ownerName = req.user.local.name
+        const ownerImage = req.user.url
         //create new comment
         const newComment = {
             commentBody: req.body.commentBody,
-            commentUser: req.user.id
+            commentUser: req.user.id,
+            ownerName: ownerName,
+            ownerImage: ownerImage
         }
 
         post.comments.unshift(newComment)

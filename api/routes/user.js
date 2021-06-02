@@ -4,6 +4,8 @@ const router = require('express-promise-router')();
 const mongoose = require('mongoose')
 const passport = require('passport');
 const passportConf = require('../../passport');
+const multerConfig = require('../../multer')
+
 
 const { validateBody, schemas } = require('../helpers/router-helpers');
 const UsersController = require('../controllers/user');
@@ -25,7 +27,7 @@ router.route('/oauth/facebook')
   .post(passportFacebook, UsersController.facebookOAuth);
 
 router.route('/editProfile')
-  .put(passportJWT, UsersController.editProfile);
+  .put(passportJWT, multerConfig, UsersController.editProfile);
 
 router.route('/:id/profile')
   .get(passportJWT, UsersController.profile);

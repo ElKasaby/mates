@@ -2,6 +2,8 @@ const JWT = require('jsonwebtoken')
 const { json } = require('body-parser')
 // const mongose = require('mongoose')
 const User = require('../models/user')
+const cloud = require('../../cloudinary')
+
 
 
 signToken = user => {
@@ -102,7 +104,10 @@ module.exports = {
     },
     editProfile: async (req, res, next)=>{
         const profile = await User.findOne({"_id":req.user._id })
-        console.log(profile);
+        const result = await cloud.uploads(req.files[0].path||req.files[0])
+        req.body.image = req.files[0].originalname
+        req.body.url = result.url
+       
         // new value
         await profile.set(req.body).save()
         res.status(200).json({

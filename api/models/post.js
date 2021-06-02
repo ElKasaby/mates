@@ -20,6 +20,12 @@ const postSchema = mongoose.Schema({
     commentUser:{
       type:  mongoose.Schema.Types.ObjectId,
       ref:'user'
+    },
+    ownerName:{
+      type: String
+    },
+    ownerImage:{
+      type: String
     }
   }],
   postOwner:{
@@ -29,7 +35,14 @@ const postSchema = mongoose.Schema({
   date:{
     type: Date,
     default: Date.now
+  },
+  ownerName:{
+    type: String
+  },
+  ownerImage:{
+    type: String
   }
+
 })
  
  
