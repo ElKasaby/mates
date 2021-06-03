@@ -38,7 +38,7 @@ module.exports = {
     invite: async (req, res, next)=>{
         const teamId = req.params.id
         const userName = req.body.name
-
+        console.log(userName);
         const userId = await User.findOne({"local.name": userName})
         if(!userId){
             return res.status(403).json({
@@ -111,10 +111,11 @@ module.exports = {
         const teamId = req.params.id
         const team = await Team.findOne({"_id": teamId})
 
+        // console.log(req.body);
+        // await team.set(req.body).save()
         // new value 
         team.teamName= req.body.teamName
         team.teamDescription= req.body.teamDiscription
-        team.teamPhoto= req.body.teamPhoto
         await team.save()
         res.status(200).json({
             massage:'team updata done',

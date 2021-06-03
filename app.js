@@ -1,3 +1,4 @@
+const cors = require('cors')
 const express = require('express')
 const morgan = require('morgan')
 const bodyParser =require('body-parser')
@@ -19,6 +20,7 @@ mongoose.connect('mongodb+srv://Kasaby:'+
 
 
 //Middlewarees
+app.use(cors())
 app.use(morgan('dev'))
 app.use(bodyParser.json())
 // serve images in directory named images 
