@@ -67,6 +67,7 @@ module.exports = {
 
         res.status(200).json({
             token,
+            id: newUser.id,
             name: req.body.name,
             email: req.body.email
         })
