@@ -39,7 +39,7 @@ module.exports = {
         const teamId = req.params.id
         const userName = req.body.name
         console.log(userName);
-        const userId = await User.findOne({"local.name": userName})
+        const userId = await User.findOne({"name": userName})
         if(!userId){
             return res.status(403).json({
                  error : 'name is not exist'
@@ -72,7 +72,7 @@ module.exports = {
         for(var i= 0; i <= member.length ; i++){
             const foundUserId = await User.findOne({"_id": member[i]})
             if(foundUserId){
-                memberData.push(foundUserId.local.name)
+                memberData.push(foundUserId.name)
                 
             }
         }

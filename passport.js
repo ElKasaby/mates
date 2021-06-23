@@ -32,85 +32,85 @@ passport.use(new JwtStrategy({
   }
 }));
 
-// GOOGLE OAUTH
-passport.use('googleToken',new GooglePlusTokenStrategy({
-  clientID:'539616226465-n5246pj7ujqe554m7p0qire1unj6id1a.apps.googleusercontent.com',
-  clientSecret:'QuYyeJKUFBsZZ8JsJeTzNBFV'
-},async(accessToken, refreshToken, profile, done)=>{
+// // GOOGLE OAUTH
+// passport.use('googleToken',new GooglePlusTokenStrategy({
+//   clientID:'539616226465-n5246pj7ujqe554m7p0qire1unj6id1a.apps.googleusercontent.com',
+//   clientSecret:'QuYyeJKUFBsZZ8JsJeTzNBFV'
+// },async(accessToken, refreshToken, profile, done)=>{
   
-  try{
-    console.log("accessToken:",accessToken);
-    console.log("refreshToken:",refreshToken);
-    console.log("profile:",profile);
+//   try{
+//     console.log("accessToken:",accessToken);
+//     console.log("refreshToken:",refreshToken);
+//     console.log("profile:",profile);
 
-    // check whether this current user exist in our DB
-    const existingUser = await User.findOne({"google.id": profile.id})
-    if(existingUser){
-      return done(null, existingUser)
-    }
-    const image = profile.photos[0].value.substring(0);
-    console.log("image:",image);
+//     // check whether this current user exist in our DB
+//     const existingUser = await User.findOne({"google.id": profile.id})
+//     if(existingUser){
+//       return done(null, existingUser)
+//     }
+//     const image = profile.photos[0].value.substring(0);
+//     console.log("image:",image);
 
-    // If new account
-    const newUSer = new User({
-      name: profile.displayName,
-      email: profile.emails[0].value,
-      image: image,
-      method: 'google',
-      google: {
-        id: profile.id,
-        name: profile.displayName,
-        email: profile.emails[0].value,
-        image: image
-      }
-    })
-    await newUSer.save()
-    done(null,newUSer)
-  }catch(error){
-    done(error,false)
-  }
-}))
+//     // If new account
+//     const newUSer = new User({
+//       name: profile.displayName,
+//       email: profile.emails[0].value,
+//       image: image,
+//       method: 'google',
+//       google: {
+//         id: profile.id,
+//         name: profile.displayName,
+//         email: profile.emails[0].value,
+//         image: image
+//       }
+//     })
+//     await newUSer.save()
+//     done(null,newUSer)
+//   }catch(error){
+//     done(error,false)
+//   }
+// }))
 
-// Facebook OAuth
-passport.use('facebookToken', new FacebookTokenStrategy({
-  clientID:'224134619357094',
-  clientSecret:'d888065b2f7c6ee9c5be52d771b75304'
-},async(accessToken, refreshToken, profile, done)=>{
-  try{
-    console.log("accessToken:",accessToken);
-    console.log("refreshToken:",refreshToken);
-    console.log("profile:",profile);
+// // Facebook OAuth
+// passport.use('facebookToken', new FacebookTokenStrategy({
+//   clientID:'224134619357094',
+//   clientSecret:'d888065b2f7c6ee9c5be52d771b75304'
+// },async(accessToken, refreshToken, profile, done)=>{
+//   try{
+//     console.log("accessToken:",accessToken);
+//     console.log("refreshToken:",refreshToken);
+//     console.log("profile:",profile);
 
-    // check whether this current user exist in our DB
-    const existingUser = await User.findOne({"facebook.id": profile.id})
-    if(existingUser){
-      return done(null, existingUser)
-    }
-    const image = profile.photos[0].value.substring(0);
-    console.log("image:",image);
-
-
-    // If new account
-    const newUSer = new User({
-      name: profile.displayName,
-      email: profile.emails[0].value,
-      image:image,
-      method: 'facebook',
-      facebook: {
-        id: profile.id,
-        name: profile.displayName,
-        email: profile.emails[0].value,
-        image:image
-      }
-    })
-    await newUSer.save()
-    done(null,newUSer)
+//     // check whether this current user exist in our DB
+//     const existingUser = await User.findOne({"facebook.id": profile.id})
+//     if(existingUser){
+//       return done(null, existingUser)
+//     }
+//     const image = profile.photos[0].value.substring(0);
+//     console.log("image:",image);
 
 
-  }catch(error){
-    done(error, false, error.message)
-  }
-}))
+//     // If new account
+//     const newUSer = new User({
+//       name: profile.displayName,
+//       email: profile.emails[0].value,
+//       image:image,
+//       method: 'facebook',
+//       facebook: {
+//         id: profile.id,
+//         name: profile.displayName,
+//         email: profile.emails[0].value,
+//         image:image
+//       }
+//     })
+//     await newUSer.save()
+//     done(null,newUSer)
+
+
+//   }catch(error){
+//     done(error, false, error.message)
+//   }
+// }))
 
 
 
@@ -122,7 +122,7 @@ passport.use(new LocalStrategy({
 }, async (email, password, done) => {
   try {
     // Find the user given the email
-    const user = await User.findOne({ "local.email": email });
+    const user = await User.findOne({ "email": email });
     
     // If not, handle it
     if (!user) {

@@ -16,7 +16,14 @@ const imageUpload = mongoose.Schema({
     uploadOwner: {
         type:  mongoose.Schema.Types.ObjectId,
         ref:'user'
+    },
+    ownerName:{
+        type : String
+    },
+    size:{
+        type: String
     }
+
 })
 
 module.exports = mongoose.model('imageUpload',imageUpload)

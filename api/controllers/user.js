@@ -3,6 +3,7 @@ const { json } = require('body-parser')
 // const mongose = require('mongoose')
 const User = require('../models/user')
 const cloud = require('../../cloudinary')
+const fs = require('fs')
 
 
 
@@ -17,10 +18,13 @@ signToken = user => {
 
 module.exports = {
     signup: async (req, res, next)=>{
-        const { name, email, password, confirmPassword } = req.body
+        const result = await cloud.uploads(req.files[0].path||req.files[0])
+        const { name, email, password, confirmPassword, bio, phone, address, track, mySkills } = req.body
 
+        console.log("i am here");
         //check if there is a user with the same name
-        const foundname = await User.findOne({"local.name": name})
+        const foundname = await User.findOne({"name": name})
+        console.log(foundname);
         if(foundname){
            return res.status(403).json({
                 error : 'name is already exist'
@@ -28,7 +32,7 @@ module.exports = {
         }
 
         //check if there is a user with the same email
-        const foundemail = await User.findOne({"local.email": email})
+        const foundemail = await User.findOne({"email": email})
         if(foundemail){
            return res.status(403).json({
                 error : 'Email is already exist'
@@ -49,18 +53,26 @@ module.exports = {
             })
         }
 
-
+        // console.log(result.url);
+        // console.log(req.files[0].originalname);
         //create a new user
         const newUser = new User({
-            methods: 'local',
-            local: {
+            // methods: 'local',
+            // local: {
             name: name,
             email: email,
             password: password,
-            }
+            bio: bio,
+            phone: phone,
+            address: address,
+            track : track,
+            mySkills: mySkills,
+            // },
+            image: req.files[0].originalname,
+            url: result.url,
         })  
         await newUser.save()
-
+        fs.unlinkSync(req.files[0].path)
         
         // Generate the token 
         const token = signToken(newUser)
@@ -69,7 +81,8 @@ module.exports = {
             token,
             id: newUser.id,
             name: req.body.name,
-            email: req.body.email
+            email: req.body.email,
+            newUser
         })
 
         
@@ -77,32 +90,32 @@ module.exports = {
 
     signin: async (req, res, next)=>{
 
-        const user = await User.findOne({ "local.email": req.body.email })
+        const user = await User.findOne({ "email": req.body.email })
 
         // Generate token
         const token = signToken(req.user)
         res.status(200).json({
             token,
             id: user.id,
-            name: user.local.name,
-            email: user.local.email
+            name: user.name,
+            email: user.email
         })
     },
 
-    googleOAuth: async (req, res, next)=>{
-        const token = signToken(req.user)
-        res.status(200).json({
-            token
-        })
-    },
+    // googleOAuth: async (req, res, next)=>{
+    //     const token = signToken(req.user)
+    //     res.status(200).json({
+    //         token
+    //     })
+    // },
 
-    facebookOAuth: async (req, res, next)=>{
-        const token = signToken(req.user)
-        res.status(200).json({
-            token,
-            message:"connect with facebook"
-        })
-    },
+    // facebookOAuth: async (req, res, next)=>{
+    //     const token = signToken(req.user)
+    //     res.status(200).json({
+    //         token,
+    //         message:"connect with facebook"
+    //     })
+    // },
     editProfile: async (req, res, next)=>{
         const profile = await User.findOne({"_id":req.user._id })
         const result = await cloud.uploads(req.files[0].path||req.files[0])

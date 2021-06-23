@@ -25,7 +25,7 @@ module.exports ={
         })
     },
     addPost: async(req, res, next)=>{
-        const ownerName = req.user.local.name
+        const ownerName = req.user.name
         const ownerImage = req.user.url
         //create a new post
         const newPost = new Post({
@@ -38,6 +38,23 @@ module.exports ={
         await newPost.save()
         res.status(201).json(newPost)
 
+    },
+    editPost: async(req, res, next)=>{
+        const postId = req.params.postId
+        const post = await Post.findOne({"_id": postId})
+
+        if(post.postOwner != req.user.id){
+            return res.status(403).json({
+                message: "you cannot access this"
+            })
+        }
+        
+        post.body = req.body.postBody
+        await post.save()
+        res.status(200).json({
+            massage:'post updata done',
+            post
+        })
     },
     deletePost: async(req, res, next)=>{
         const postId = req.params.postId
@@ -74,7 +91,7 @@ module.exports ={
     addReply: async(req, res, next)=>{
         const postId = req.params.postId
         const post = await Post.findById(postId)
-        const ownerName = req.user.local.name
+        const ownerName = req.user.name
         const ownerImage = req.user.url
         //create new comment
         const newComment = {
@@ -92,6 +109,37 @@ module.exports ={
         })
 
     },
+    editReply: async(req, res, next)=>{
+        const postId = req.params.postId
+        const replyId = req.params.replyId
+        const post = await Post.findById(postId)
+        
+        const comment =post.comments
+
+        
+
+        for(var i= 0; i <comment.length ; i++){
+            if(comment[i].id == replyId){
+
+                // if(comment[i].commentUser.id!== req.user){
+                //     return res.status(403).json({
+                //         message: "you cannot access this"
+                //     })
+                // }
+                comment[i].commentBody = req.body.commentBody
+                const com = comment[i]
+                await post.save()
+                return res.status(200).json({
+                    massage: "Reply updated",
+                    com
+                })            
+            }
+        }
+        res.status(401).json({
+            massage: "Reply does not updated",
+            comment
+        })
+    },
     
     deleteReply: async(req, res, next)=>{
         const postId = req.params.postId
@@ -99,6 +147,7 @@ module.exports ={
         const post = await Post.findById(postId)
         
         const comment =post.comments
+        
 
         for(var i= 0; i <comment.length ; i++){
             if(comment[i].id == replyId){
