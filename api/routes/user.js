@@ -26,6 +26,10 @@ router.route('/signin')
 // router.route('/oauth/facebook')
 //   .post(passportFacebook, UsersController.facebookOAuth);
 
+router.route('/verifyCode')
+  .post(UsersController.verifyCode)
+
+
 router.route('/editProfile')
   .put(passportJWT, multerConfig, UsersController.editProfile);
 

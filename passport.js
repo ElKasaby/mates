@@ -124,14 +124,18 @@ passport.use(new LocalStrategy({
     // Find the user given the email
     const user = await User.findOne({ "email": email });
     
+
     // If not, handle it
     if (!user) {
       return done(null, false);
     }
-  
+    // Activeted email
+    if (!user.enabled) {
+      return done(null, false);
+    }
+
     // Check if the password is correct
     const isMatch = await user.isValidPassword(password);
-  
     // If not, handle it
     if (!isMatch) {
       return done(null, false);

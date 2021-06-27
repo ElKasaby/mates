@@ -14,6 +14,14 @@ const userSchema = mongoose.Schema({
     type: String,
     require: true
   },
+  enabled: {
+    type: Boolean,
+    default: false,
+  },
+  emailVerifingCode:{
+    type:String,
+    require:true
+  },
   image: {
     type:String
   },
@@ -130,6 +138,24 @@ const userSchema = mongoose.Schema({
   //   }
   // }
 })
+
+userSchema.set("toJSON", {
+  virtuals: true,
+  transform: function (doc) {
+    return {
+      id: doc.id,
+      name: doc.name,
+      email: doc.email,
+      phone: doc.phone,
+      image: doc.image,
+      url: doc.url,
+      bio: doc.bio,
+      address: doc.address,
+      track: doc.track,
+      mySkills: doc.mySkills
+    };
+  },
+});
 
 userSchema.pre('save', async function (next) {
     try {
