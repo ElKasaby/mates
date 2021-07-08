@@ -5,6 +5,8 @@ const Team = require('../models/team')
 const Post = require('../models/post')
 const post = require('../models/post')
 const { replaceOne } = require('../models/user')
+const {Notification} = require('../models/notification')
+
 
 
 
@@ -37,6 +39,26 @@ module.exports ={
         })
         await newPost.save()
         res.status(201).json(newPost)
+
+        // Send Notification in-app
+        const clients = await Team.find({_id: req.params.teamId}).populate("teamMember");
+        const targetUsers = clients.map((user) => user.teamMember);
+        const notification = await new Notification({
+            title: "Add post",
+            body: `${ownerName} add post in ${clients.teamName} `,
+            user: req.user._id,
+            targetUsers: targetUsers,
+            subjectType: "post",
+            subject: newPost.id ,
+        }).save();
+  
+        // push notifications
+        const receivers = targetUsers;
+        for (let i = 0; i < receivers.length; i++) {
+            await receivers[i].sendNotification(
+            notification.toFirebaseNotification()
+        );
+        }
 
     },
     editPost: async(req, res, next)=>{
@@ -108,6 +130,18 @@ module.exports ={
            post
         })
 
+        // Send Notification in-app
+        const notification = await new Notification({
+            title: "Add comment",
+            body: `${req.user.name} comment in your post `,
+            user: req.user._id,
+            targetUsers: post.postOwner,
+            subjectType: "post",
+            subject: newComment.id,
+        }).save();
+  
+        // push notifications
+        await post.sendNotification(notification.toFirebaseNotification());
     },
     editReply: async(req, res, next)=>{
         const postId = req.params.postId

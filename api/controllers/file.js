@@ -56,6 +56,16 @@ module.exports ={
         })
     },
     deleteFile: async(req, res, next)=>{
- 
+        const fileId = req.params.fileId
+        const file = await imageModel.findById(fileId)
+        if(file){
+            await imageModel.deleteOne({"_id": fileId})
+            return res.status(200).json({
+                massage: "file Deleted",
+            }) 
+        }
+        res.status(401).json({
+            massage: "Error this file does not exist",
+        })
     }
 }

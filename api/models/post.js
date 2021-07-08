@@ -19,7 +19,7 @@ const postSchema = mongoose.Schema({
     },
     commentUser:{
       type:  mongoose.Schema.Types.ObjectId,
-      ref:'user'
+      ref:'User'
     },
     ownerName:{
       type: String
@@ -30,7 +30,7 @@ const postSchema = mongoose.Schema({
   }],
   postOwner:{
     type: mongoose.Schema.Types.ObjectId,
-    ref:'user'
+    ref:'User'
   },
   date:{
     type: Date,

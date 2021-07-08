@@ -2,6 +2,7 @@ const { json } = require('body-parser')
 const User = require('../models/user')
 const Team = require('../models/team')
 const cloud = require('../../cloudinary')
+const {Notification} = require('../models/notification')
 const _ = require("lodash")
 
 
@@ -37,29 +38,53 @@ module.exports = {
     },
     invite: async (req, res, next)=>{
         const teamId = req.params.id
-        const userName = req.body.name
-        console.log(userName);
-        const userId = await User.findOne({"name": userName})
+        const userName = req.body.email
+
+        const userId = await User.findOne({"email": userName})
         if(!userId){
             return res.status(403).json({
-                 error : 'name is not exist'
+                 error : 'email is not exist'
              })
-         }
-        
+        }
         const team = await Team.findOne({"_id": teamId})
-        const foundId = await Team.findOne({"teamMember": userId.id})
-        if(foundId){
-            return res.status(403).json({
-                error : 'Member is already exist',
-                memberId: team.teamMember
-             })
-         }
+        // const foundId = await Team.findOne({"teamMember": userId.id})
+        const member = team.teamMember
+        for(var i= 0; i <member.length ; i++){
+            if(member[i] == userId.id){
+                return res.status(403).json({
+                    error : 'Member is already exist',
+                    memberId: team.teamMember
+                })         
+            }
+        }
+
+        // if(foundId){
+        //     return res.status(403).json({
+        //         error : 'Member is already exist',
+        //         memberId: team.teamMember
+        //     })
+        // }
         team.teamMember.unshift(userId)
         await team.save()
         res.status(200).json({
-           massage  : 'Member add sucsusfly',
-           team
+            massage  : 'Member add sucsusfly',
+            team
         })
+        
+
+        // Send Notification in-app
+        const clients = await User.findOne({ _id: userId.id });
+        const notification = await new Notification({
+          title: `New Message`,
+          body: `${req.user.name} add you in this team`,
+          user: req.user.id,
+          targetUsers: clients,
+          subjectType: "team",
+          subject: teamId,
+        }).save();
+
+        // push notifications
+        await clients.sendNotification(notification.toFirebaseNotification());
         
         
     },
@@ -72,8 +97,7 @@ module.exports = {
         for(var i= 0; i <= member.length ; i++){
             const foundUserId = await User.findOne({"_id": member[i]})
             if(foundUserId){
-                memberData.push(foundUserId.name)
-                
+                memberData.push(foundUserId)
             }
         }
         res.status(200).json({
@@ -100,12 +124,15 @@ module.exports = {
     },
     deleteTeam: async (req, res, next)=>{
         const teamId = req.params.id
-        const deleteTeam = await Team.deleteOne({"_id": teamId})
         const team = await Team.findOne({"_id": teamId})
+        if(!team){
+            return res.status(401).send("this team is note exist")
+        }
+        const deleteTeam = await Team.deleteOne({"_id": teamId})
         res.status(200).json({
-            massage : 'team delete sucussfly',
-            team
+            massage : 'team delete sucussfly'
         })
+    
     },
     editTeam: async (req, res, next)=>{
         const teamId = req.params.id

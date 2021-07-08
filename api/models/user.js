@@ -1,5 +1,7 @@
 const mongoose = require("mongoose")
 const bcrypt = require('bcryptjs')
+const notificationService = require("../../notification");
+
 
 const userSchema = mongoose.Schema({
   name: {
@@ -43,100 +45,22 @@ const userSchema = mongoose.Schema({
   mySkills:{
     type: String,
   },
-  // methods: {
-  //   type: String,
-  //   enum: ['local', 'google', 'facebook']
-  // },
-  // local: {
-  //   name: {
-  //     type: String,
-  //     require: true
-  //   },
-  //   email: {
-  //     type: String,
-  //     require: true
-  //   },
-  //   password: {
-  //     type: String,
-  //     require: true
-  //   },
-  //   image: {
-  //     type:String
-  //   },
-  //   bio:{
-  //     type: String,
-  //   },
-  //   phone:{
-  //     type: String,
-  //   },
-  //   address:{
-  //     type: String,
-  //   },
-  //   track:{
-  //     type: String,
-  //   },
-  //   mySkills:{
-  //     type: String,
-  //   }
-  // },
-  // google: {
-  //   name: {
-  //     type: String
-  //   },
-  //   id: {
-  //     type: String
-  //   },
-  //   email: {
-  //     type: String
-  //   },
-  //   image: {
-  //     type:String
-  //   },
-  //   bio:{
-  //     type: String,
-  //   },
-  //   phone:{
-  //     type: String,
-  //   },
-  //   address:{
-  //     type: String,
-  //   },
-  //   track:{
-  //     type: String,
-  //   },
-  //   mySkills:{
-  //     type: String,
-  //   }
-  // },
-  // facebook: {
-  //   name: {
-  //     type: String
-  //   },
-  //   id: {
-  //     type: String
-  //   },
-  //   email: {
-  //     type: String
-  //   },
-  //   image: {
-  //     type:String
-  //   },
-  //   bio:{
-  //     type: String,
-  //   },
-  //   phone:{
-  //     type: String,
-  //   },
-  //   address:{
-  //     type: String,
-  //   },
-  //   track:{
-  //     type: String,
-  //   },
-  //   mySkills:{
-  //     type: String,
-  //   }
-  // }
+  pushTokens: [
+    new mongoose.Schema(
+      {
+        deviceType: {
+          type: String,
+          enum: ["android", "ios", "web"],
+          required: true,
+        },
+        deviceToken: {
+          type: String,
+          required: true,
+        },
+      },
+      { _id: false }
+    ),
+  ],
 })
 
 userSchema.set("toJSON", {
@@ -180,7 +104,25 @@ userSchema.methods.isValidPassword = async function (newPassword) {
     } catch (error) {
       throw new Error(error);
     }
+}
+
+userSchema.methods.sendNotification = async function (message) {
+  let changed = false;
+  let len = this.pushTokens.length;
+  while (len--) {
+    const deviceToken = this.pushTokens[len].deviceToken;
+    try {
+      console.log("1");
+      await notificationService.sendNotification(deviceToken, message);
+      console.log("2");
+    } catch (error) {
+      // console.log(error);
+      this.pushTokens.splice(len, 1);
+      changed = true;
+    }
   }
+  if (changed) await this.save();
+};
  
 
 

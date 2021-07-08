@@ -12,6 +12,7 @@ signToken = user => {
     return JWT.sign({
         iss: 'Elkasaby',
         sub:user.id,
+        _id:user.id,
         jat: new Date().getTime(),// current time
         exp: new Date().setDate(new Date().getDate()+1)// current time + 1 day ahead 
     },process.env.JWT_KEY)
@@ -20,15 +21,15 @@ signToken = user => {
 module.exports = {
     signup: async (req, res, next)=>{
         const result = await cloud.uploads(req.files[0].path||req.files[0])
-        const { name, email, password, confirmPassword, bio, phone, address, track, mySkills } = req.body
+        const { name, email, password, confirmPassword, bio, phone, address, track, mySkills, deviceType, deviceToken } = req.body
 
-        //check if there is a user with the same name
-        const foundname = await User.findOne({"name": name})
-        if(foundname){
-           return res.status(403).json({
-                error : 'name is already exist'
-            })
-        }
+        // //check if there is a user with the same name
+        // const foundname = await User.findOne({"name": name})
+        // if(foundname){
+        //    return res.status(403).json({
+        //         error : 'name is already exist'
+        //     })
+        // }
 
         //check if there is a user with the same email
         const foundemail = await User.findOne({"email": email})
@@ -46,9 +47,9 @@ module.exports = {
         }
 
         // check length of password
-        if(req.body.password.length < 8){
+        if(req.body.password.length < 7){
             return res.status(409).json({
-                message: 'Password must be at least 9 characters'
+                message: 'Password must be at least 8 characters'
             })
         }
 
@@ -81,6 +82,10 @@ module.exports = {
         // console.log(result.url);
         // console.log(req.files[0].originalname);
         //create a new user
+        const pushTokens = [{
+            deviceType,
+            deviceToken
+        }]
         const newUser = new User({
             // methods: 'local',
             // local: {
@@ -96,6 +101,7 @@ module.exports = {
             // },
             image: req.files[0].originalname,
             url: result.url,
+            pushTokens: pushTokens
         })  
         await newUser.save()
         fs.unlinkSync(req.files[0].path)
