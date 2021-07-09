@@ -2,7 +2,7 @@ const socketIO = require("socket.io");
 const socketIOJwt = require("socketio-jwt");
 const { Conversation } = require("./api/models/conversation");
 const { Message } = require("./api/models/message");
-// const { Notification } = require("./api/models/");
+const { Notification } = require("./api/models/notification");
 const { User } = require("./api/models/user");
 
 module.exports = {

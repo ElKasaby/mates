@@ -7,7 +7,7 @@ const mongoose = require('mongoose')
 const http = require("http");
 const helmet = require("helmet");
 const compression = require("compression");
-// const notifications = require("../routes/Notification");
+const notifications = require("./api/routes/Notification");
 const conversations = require("./api/routes/Conversations");
 
 const app = express() 
@@ -39,7 +39,7 @@ app.use('/user',require('./api/routes/user'))
 app.use('/team',require('./api/routes/team'))
 app.use('/post',require('./api/routes/post'))
 app.use('/file',require('./api/routes/file'))
-// app.use(notifications);
+app.use(notifications);
 // app.use('/Conversations',require('./api/routes/Conversations'))
 
 app.use(conversations);
