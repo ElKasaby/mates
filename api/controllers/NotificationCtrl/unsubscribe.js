@@ -1,4 +1,6 @@
 const _ = require("lodash");
+const User = require('../../models/user')
+
 
 module.exports = async (req, res) => {
   const user = req.user;
@@ -10,10 +12,25 @@ module.exports = async (req, res) => {
       _.matchesProperty("deviceToken", token)
     );
     if (index !== undefined) {
-      user.pushTokens.splice(index, 1);
-      await user.save();
+      await User.updateOne(
+        { _id: req.user.id },
+        { $pull: {
+          pushTokens: {
+            deviceToken: token 
+          }
+        }
+      })
+      return res.status(200).json({
+        msg:"device token delete succeeded!",
+        user
+      });
+      // user.pushTokens.splice(index, 1);
+      // await user.save();
     }
   }
 
-  return res.status(200).json(user);
+  return res.status(401).json({
+    msg:"Error device token here",
+    user
+  });
 };

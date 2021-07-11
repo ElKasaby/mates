@@ -12,9 +12,23 @@ module.exports = async (req, res) => {
     );
     if (index === undefined) {
       
-      await User.updateOne({ id: user },{ $set: {pushTokens:[{deviceType : req.body.deviceType},{deviceToken: token}] }})
+      await User.updateOne(
+        { _id: req.user.id },
+        {
+          $push: {
+            pushTokens: {
+              deviceType: req.body.deviceType,
+              deviceToken: token
+            },
+          },
+        }
+      );
+      return res.status(200).json({
+        msg:"device token push succeeded!",
+        user
+      });
 
-
+      
       // user.pushTokens.push({
       //   deviceType: req.body.deviceType,
       //   deviceToken: token,
@@ -23,5 +37,8 @@ module.exports = async (req, res) => {
   }
 
   // await user.save();
-  return res.status(200).json(user);
+  return res.status(200).json({
+    msg:"this token was pushed",
+    user
+  })
 };
