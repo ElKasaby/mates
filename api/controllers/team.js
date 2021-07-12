@@ -21,14 +21,14 @@ module.exports = {
         })
     },
     addTeam: async (req, res, next)=>{
-        // const result = await cloud.uploads(req.files[0].path||req.files[0])
+        const result = await cloud.uploads(req.files[0].path||req.files[0])
 
         //create a new team
         const newTeam = new Team({
             teamName: req.body.teamName,
             teamDescription: req.body.teamDiscription,
-            // teamPhoto : req.files[0].originalname,
-            // url : result.url,
+            teamPhoto : req.files[0].originalname,
+            url : result.url,
             teamOwner: req.user.id,
             teamMember: req.user.id,
             teamAdmin: req.user.id
