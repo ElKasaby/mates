@@ -23,14 +23,6 @@ module.exports = {
         const result = await cloud.uploads(req.files[0].path||req.files[0])
         const { name, email, password, confirmPassword, bio, phone, address, track, mySkills, deviceType, deviceToken } = req.body
 
-        // //check if there is a user with the same name
-        // const foundname = await User.findOne({"name": name})
-        // if(foundname){
-        //    return res.status(403).json({
-        //         error : 'name is already exist'
-        //     })
-        // }
-
         //check if there is a user with the same email
         const foundemail = await User.findOne({"email": email})
         if(foundemail){
@@ -79,16 +71,12 @@ module.exports = {
                 console.log(`Email sent: ${info.response}`);
             }
         });
-        // console.log(result.url);
-        // console.log(req.files[0].originalname);
-        //create a new user
+       
         const pushTokens = [{
             deviceType,
             deviceToken
         }]
         const newUser = new User({
-            // methods: 'local',
-            // local: {
             name: name,
             email: email,
             password: password,
@@ -98,7 +86,6 @@ module.exports = {
             address: address,
             track : track,
             mySkills: mySkills,
-            // },
             image: req.files[0].originalname,
             url: result.url,
             pushTokens: pushTokens
@@ -109,18 +96,6 @@ module.exports = {
             msg: "done sign up",
             newUser
         })
-
-        // Generate the token 
-        // const token = signToken(newUser)
-
-        // res.status(200).json({
-        //     token,
-        //     id: newUser.id,
-        //     name: req.body.name,
-        //     email: req.body.email,
-        //     newUser
-        // })
-
         
     },
     verifyCode: async (req, res, next) => {
@@ -140,9 +115,9 @@ module.exports = {
                 user
             })
           }else{
-            await User.deleteOne({"_id": user.id})
-            res.status(404).send("sorry code is not correct . plz, try sign up again")
+            res.status(404).send("sorry code is not correct . plz, try again")
           }
+          
         } catch (error) {
           next(error);
         }
@@ -176,9 +151,12 @@ module.exports = {
     // },
     editProfile: async (req, res, next)=>{
         // const profile = await User.findOne({"_id":req.user._id })
-        const result = await cloud.uploads(req.files[0].path||req.files[0])
-        req.body.image = req.files[0].originalname
-        req.body.url = result.url
+        if(req.files.length != 0){
+            const result = await cloud.uploads(req.files[0].path||req.files[0])
+            req.body.image = req.files[0].originalname
+            req.body.url = result.url
+        }
+        
         
         await User.updateOne({ _id: req.user._id },{ $set: req.body})
         const profile = await User.findOne({"_id":req.user._id })
