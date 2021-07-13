@@ -3,7 +3,7 @@ const socketIOJwt = require("socketio-jwt");
 const { Conversation } = require("./api/models/conversation");
 const { Message } = require("./api/models/message");
 const { Notification } = require("./api/models/notification");
-const { User } = require("./api/models/user");
+const User = require("./api/models/user")
 
 module.exports = {
   up: function (server) {
@@ -67,6 +67,7 @@ module.exports = {
 
           // Send Notification in-app
           const clients = await User.findOne({ _id: data.to });
+          console.log(clients);
           const notification = await new Notification({
             title: `New Message`,
             body: data.content,
