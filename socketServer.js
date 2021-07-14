@@ -77,8 +77,8 @@ module.exports = {
             subject: createdMessage._id,
           }).save();
 
-          // push notifications
-          await clients.sendNotification(notification.toFirebaseNotification());
+          // // push notifications
+          // await clients.sendNotification(notification.toFirebaseNotification());
         });
       });
 
