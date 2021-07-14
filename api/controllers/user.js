@@ -18,6 +18,37 @@ signToken = user => {
     },process.env.JWT_KEY)
 }
 
+// emailValidation = user => {
+//     var generator = new CodeGenerator();
+//     const code = generator.generateCodes("#+#+#+", 100)[0];
+
+//     var transporter = nodemailer.createTransport({
+//         service: "gmail",
+//         auth: {
+//             user: "mohamed1alasby@gmail.com",
+//             pass: process.env.pass,
+//         },
+//     });
+
+//     var mailOptions = {
+//         from: "mohamed1alasby@gmail.com",
+//         to: user.email,
+//         subject: "Verfication Code",
+//         text: `your verfication code ${code}`,
+//     };
+
+//     transporter.sendMail(mailOptions, function (error, info) {
+//         if (error) {
+//             console.log(error);
+//         } else {
+//             console.log(`Email sent: ${info.response}`);
+//         }
+//     });
+   
+//     await User.updateOne({ email: user.email },{ $set: {emailVerifingCode: code}})
+
+// }
+
 module.exports = {
     signup: async (req, res, next)=>{
         const result = await cloud.uploads(req.files[0].path||req.files[0])
@@ -121,6 +152,41 @@ module.exports = {
         } catch (error) {
           next(error);
         }
+    },
+
+    sendAgain: async (req, res, next)=>{
+        const user = await User.findOne({ "email": req.body.email })
+        var generator = new CodeGenerator();
+        const code = generator.generateCodes("#+#+#+", 100)[0];
+
+        var transporter = nodemailer.createTransport({
+            service: "gmail",
+            auth: {
+                user: "mohamed1alasby@gmail.com",
+                pass: process.env.pass,
+             },
+        });
+
+        var mailOptions = {
+            from: "mohamed1alasby@gmail.com",
+            to: req.body.email,
+            subject: "Verfication Code",
+            text: `your verfication code ${code}`,
+        };
+
+        transporter.sendMail(mailOptions, function (error, info) {
+            if (error) {
+                console.log(error);
+            } else {
+                console.log(`Email sent: ${info.response}`);
+            }
+        });
+   
+        await User.updateOne({ email: req.body.email },{ $set: {emailVerifingCode: code}})
+        res.status(200).json({
+            msg:"Done newCode",
+            user
+        })
     },
 
     signin: async (req, res, next)=>{

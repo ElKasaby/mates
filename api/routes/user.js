@@ -29,6 +29,8 @@ router.route('/signin')
 router.route('/verifyCode')
   .post(UsersController.verifyCode)
 
+router.route('/sendAgain')
+  .post(UsersController.sendAgain)
 
 router.route('/editProfile')
   .put(passportJWT, multerConfig, UsersController.editProfile);
