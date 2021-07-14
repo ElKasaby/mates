@@ -116,12 +116,11 @@ userSchema.methods.sendNotification = async function (message) {
       await notificationService.sendNotification(deviceToken, message);
       console.log("2");
     } catch (error) {
-      // console.log(error);
+      console.log(error);
       this.pushTokens.splice(len, 1);
       changed = true;
     }
   }
-  if (changed) await this.save();
 };
  
 

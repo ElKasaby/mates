@@ -78,7 +78,7 @@ module.exports = {
           }).save();
 
           // // push notifications
-          // await clients.sendNotification(notification.toFirebaseNotification());
+          await clients.sendNotification(notification.toFirebaseNotification());
         });
       });
 
