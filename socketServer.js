@@ -65,6 +65,11 @@ module.exports = {
             message: data,
           });
 
+          chatNamespace.to(`user ${_id}`).emit("new message", {
+            conversation,
+            message: data,
+          });
+
           // Send Notification in-app
           const clients = await User.findOne({ _id: data.to });
           console.log(clients);
