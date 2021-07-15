@@ -42,9 +42,17 @@ exports.check = async (req, res) => {
   let conversation = await Conversation.findOne({
     $or: [{ users: [req.user.id, req.params.userId] }, { users: [req.params.userId, req.user.id] }],
   }); 
-    // if not 404 --- space if okay conut
-  if(!conversation){
-    return res.status(401).send("Error give me new conversation")
+  // if not 404 --- space if okay conut
+  // if not create one
+  if (!conversation) {
+    conversation = await new Conversation({
+      users: [req.user.id, req.params.userId],
+      meta: [
+        { user: req.user.id, countOfUnseenMessages: 0 },
+        { user: req.params.userId, countOfUnseenMessages: 0 },
+      ],
+    }).save();
+    return res.status(200).send(conversation)
   }
   if (conversation.users.indexOf(req.user._id) === -1)
     return res.status(403).send("Dont allow to view these messages");
