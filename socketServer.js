@@ -68,13 +68,15 @@ module.exports = {
           chatNamespace.to(`user ${data.to}`).emit("new message", {
             conversation,
             message: data,
-            user : messages
+            msg : messages ,
+            userId: _id
           });
 
           chatNamespace.to(`user ${_id}`).emit("new message", {
             conversation,
             message: data,
-            user : messages
+            msg : messages,
+            userId: _id
           });
 
           // Send Notification in-app
