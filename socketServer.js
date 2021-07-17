@@ -59,15 +59,22 @@ module.exports = {
             else info.countOfUnseenMessages++;
           });
           await conversation.save();
+
+          const messages = await Message.find
+            ({"_id": createdMessage.id})
+            .populate([{path: "user", select: "name url"}])
+
           // emit message
           chatNamespace.to(`user ${data.to}`).emit("new message", {
             conversation,
             message: data,
+            user : messages
           });
 
           chatNamespace.to(`user ${_id}`).emit("new message", {
             conversation,
             message: data,
+            user : messages
           });
 
           // Send Notification in-app
