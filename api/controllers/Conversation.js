@@ -67,5 +67,8 @@ exports.check = async (req, res) => {
     ({"conversation": conversation.id})
     .sort("-createdAt")
     .populate([{path: "user", select: "name url"}])
-  res.status(200).send(messages);
+  res.status(200).json({
+    conversation,
+    messages
+  })
 };
