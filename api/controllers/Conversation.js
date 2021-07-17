@@ -35,7 +35,10 @@ exports.fetchMessagesForCoversation = async (req, res) => {
     .sort("-createdAt")
     .populate([{path: "user", select: "name url"}])
 
-  res.status(200).send(messages);
+    res.status(200).json({
+      conversation,
+      messages
+    })
 };
 
 exports.check = async (req, res) => {
@@ -52,7 +55,14 @@ exports.check = async (req, res) => {
         { user: req.params.userId, countOfUnseenMessages: 0 },
       ],
     }).save();
-    return res.status(200).send(conversation)
+    const messages = await Message.find
+    ({"conversation": conversation.id})
+    .sort("-createdAt")
+    .populate([{path: "user", select: "name url"}])
+    return res.status(200).json({
+      conversation, 
+      messages
+    })
   }
   if (conversation.users.indexOf(req.user._id) === -1)
     return res.status(403).send("Dont allow to view these messages");
@@ -68,7 +78,7 @@ exports.check = async (req, res) => {
     .sort("-createdAt")
     .populate([{path: "user", select: "name url"}])
   res.status(200).json({
-    conversation,
+    conversation, 
     messages
   })
 };
