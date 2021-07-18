@@ -116,19 +116,11 @@ userSchema.methods.sendNotification = async function (message) {
       await notificationService.sendNotification(deviceToken, message);
       console.log("2");
     } catch (error) {
-<<<<<<< HEAD
-      // console.log(error);
-=======
       console.log(error);
->>>>>>> 557665fb0a54063291940d615fc02809ffb75a8b
       this.pushTokens.splice(len, 1);
       changed = true;
     }
   }
-<<<<<<< HEAD
-  // if (changed) await this.save();
-=======
->>>>>>> 557665fb0a54063291940d615fc02809ffb75a8b
 };
  
 
