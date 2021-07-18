@@ -15,16 +15,22 @@ const passportGoogle = passport.authenticate('googleToken', { session: false })
 const passportFacebook = passport.authenticate('facebookToken', { session: false })
 
 router.route('/signup')
-  .post(UsersController.signup);//validateBody(schemas.authSchema), 
+  .post(multerConfig, UsersController.signup);//validateBody(schemas.authSchema), 
 
 router.route('/signin')
   .post(passportSignIn, UsersController.signin); 
 
-router.route('/oauth/google')
-  .post(passportGoogle, UsersController.googleOAuth);
+// router.route('/oauth/google')
+//   .post(passportGoogle, UsersController.googleOAuth);
 
-router.route('/oauth/facebook')
-  .post(passportFacebook, UsersController.facebookOAuth);
+// router.route('/oauth/facebook')
+//   .post(passportFacebook, UsersController.facebookOAuth);
+
+router.route('/verifyCode')
+  .post(UsersController.verifyCode)
+
+router.route('/sendAgain')
+  .post(UsersController.sendAgain)
 
 router.route('/editProfile')
   .put(passportJWT, multerConfig, UsersController.editProfile);

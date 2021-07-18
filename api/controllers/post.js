@@ -5,6 +5,8 @@ const Team = require('../models/team')
 const Post = require('../models/post')
 const post = require('../models/post')
 const { replaceOne } = require('../models/user')
+const {Notification} = require('../models/notification')
+
 
 
 
@@ -25,7 +27,7 @@ module.exports ={
         })
     },
     addPost: async(req, res, next)=>{
-        const ownerName = req.user.local.name
+        const ownerName = req.user.name
         const ownerImage = req.user.url
         //create a new post
         const newPost = new Post({
@@ -38,6 +40,43 @@ module.exports ={
         await newPost.save()
         res.status(201).json(newPost)
 
+        // Send Notification in-app
+        const clients = await Team.find({_id: req.params.teamId}).populate("teamMember");
+        const targetUsers = clients.map((user) => user.teamMember);
+        const notification = await new Notification({
+            title: "Add post",
+            body: `${ownerName} add post in ${clients.teamName} `,
+            user: req.user._id,
+            targetUsers: targetUsers,
+            subjectType: "post",
+            subject: newPost.id ,
+        }).save();
+  
+        // push notifications
+        const receivers = targetUsers;
+        for (let i = 0; i < receivers.length; i++) {
+            await receivers[i].sendNotification(
+            notification.toFirebaseNotification()
+        );
+        }
+
+    },
+    editPost: async(req, res, next)=>{
+        const postId = req.params.postId
+        const post = await Post.findOne({"_id": postId})
+
+        if(post.postOwner != req.user.id){
+            return res.status(403).json({
+                message: "you cannot access this"
+            })
+        }
+        
+        post.body = req.body.postBody
+        await post.save()
+        res.status(200).json({
+            massage:'post updata done',
+            post
+        })
     },
     deletePost: async(req, res, next)=>{
         const postId = req.params.postId
@@ -74,7 +113,7 @@ module.exports ={
     addReply: async(req, res, next)=>{
         const postId = req.params.postId
         const post = await Post.findById(postId)
-        const ownerName = req.user.local.name
+        const ownerName = req.user.name
         const ownerImage = req.user.url
         //create new comment
         const newComment = {
@@ -91,6 +130,49 @@ module.exports ={
            post
         })
 
+        // Send Notification in-app
+        const notification = await new Notification({
+            title: "Add comment",
+            body: `${req.user.name} comment in your post `,
+            user: req.user._id,
+            targetUsers: post.postOwner,
+            subjectType: "post",
+            subject: newComment.id,
+        }).save();
+  
+        // push notifications
+        await post.sendNotification(notification.toFirebaseNotification());
+    },
+    editReply: async(req, res, next)=>{
+        const postId = req.params.postId
+        const replyId = req.params.replyId
+        const post = await Post.findById(postId)
+        
+        const comment =post.comments
+
+        
+
+        for(var i= 0; i <comment.length ; i++){
+            if(comment[i].id == replyId){
+
+                // if(comment[i].commentUser.id!== req.user){
+                //     return res.status(403).json({
+                //         message: "you cannot access this"
+                //     })
+                // }
+                comment[i].commentBody = req.body.commentBody
+                const com = comment[i]
+                await post.save()
+                return res.status(200).json({
+                    massage: "Reply updated",
+                    com
+                })            
+            }
+        }
+        res.status(401).json({
+            massage: "Reply does not updated",
+            comment
+        })
     },
     
     deleteReply: async(req, res, next)=>{
@@ -99,6 +181,7 @@ module.exports ={
         const post = await Post.findById(postId)
         
         const comment =post.comments
+        
 
         for(var i= 0; i <comment.length ; i++){
             if(comment[i].id == replyId){

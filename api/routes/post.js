@@ -14,6 +14,9 @@ router.route('/:teamId/allPosts')
 router.route('/:teamId/addPost')
   .post(passportJWT,postController.addPost);
 
+router.route('/:postId/editPost')
+  .put(passportJWT,postController.editPost);
+
 router.route('/:postId/deletePost')
   .delete(passportJWT,postController.deletePost);
 
@@ -22,6 +25,9 @@ router.route('/:postId/allReply')
 
 router.route('/:postId/addReply')
   .post(passportJWT,postController.addReply);
+
+router.route('/:postId/:replyId/editReply')
+  .put(passportJWT,postController.editReply);
 
 router.route('/:postId/:replyId/deleteReply')
   .delete(passportJWT,postController.deleteReply);

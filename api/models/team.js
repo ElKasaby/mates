@@ -21,15 +21,15 @@ const teamSchema = mongoose.Schema({
     },
     teamOwner:{
         type: mongoose.Schema.Types.ObjectId,
-        ref:'user'
+        ref:'User'
     },
     teamMember:[{
         type:  mongoose.Schema.Types.ObjectId,
-        ref:'user'
+        ref:'User'
     }],
     teamAdmin:[{
         type:  mongoose.Schema.Types.ObjectId,
-        ref:'user'
+        ref:'User'
     }]
 })
  

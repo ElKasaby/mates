@@ -31,12 +31,18 @@ module.exports ={
     },
     upload: async(req, res, next)=>{
         const result = await cloud.uploads(req.files[0].path||req.files[0])
-
+        const ownerName = req.user.name
+        const theSize = req.files[0].size
+        const fixedSize=(theSize/1000)/1000
+        const size = fixedSize.toFixed(1);
+       
         const imageDetails = {
             team : req.params.teamId,
             imageName : req.files[0].originalname ,
             uploadOwner: req.user.id, /// new added important 
-            url : result.url
+            url : result.url,
+            ownerName,
+            size
         }
         const image = new imageModel(imageDetails)
         image.save()
@@ -50,6 +56,16 @@ module.exports ={
         })
     },
     deleteFile: async(req, res, next)=>{
- 
+        const fileId = req.params.fileId
+        const file = await imageModel.findById(fileId)
+        if(file){
+            await imageModel.deleteOne({"_id": fileId})
+            return res.status(200).json({
+                massage: "file Deleted",
+            }) 
+        }
+        res.status(401).json({
+            massage: "Error this file does not exist",
+        })
     }
 }
