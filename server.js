@@ -9,7 +9,7 @@ const helmet = require("helmet");
 const compression = require("compression");
 const notifications = require("./api/routes/Notification");
 const conversations = require("./api/routes/Conversations");
-const calendar = require('./api/models/calendar')
+const calendar = require('./api/routes/calendar')
 
 const app = express() 
 
@@ -42,9 +42,6 @@ app.use('/post',require('./api/routes/post'))
 app.use('/file',require('./api/routes/file'))
 app.use(notifications);
 app.use(calendar);
-
-// app.use('/Conversations',require('./api/routes/Conversations'))
-
 app.use(conversations);
 
 
