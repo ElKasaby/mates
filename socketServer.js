@@ -3,7 +3,7 @@ const socketIOJwt = require("socketio-jwt");
 const { Conversation } = require("./api/models/conversation");
 const { Message } = require("./api/models/message");
 const { Notification } = require("./api/models/notification");
-const { User } = require("./api/models/user");
+const User = require("./api/models/user")
 
 module.exports = {
   up: function (server) {
@@ -59,8 +59,9 @@ module.exports = {
             else info.countOfUnseenMessages++;
           });
           await conversation.save();
+
           const messages = await Message.find
-            ({"id": createdMessage.id})
+            ({"_id": createdMessage.id})
             .populate([{path: "user", select: "name url"}])
 
           // emit message
@@ -80,6 +81,7 @@ module.exports = {
 
           // Send Notification in-app
           const clients = await User.findOne({ _id: data.to });
+          console.log(clients);
           const notification = await new Notification({
             title: `New Message`,
             body: data.content,
@@ -89,7 +91,7 @@ module.exports = {
             subject: createdMessage._id,
           }).save();
 
-          // push notifications
+          // // push notifications
           await clients.sendNotification(notification.toFirebaseNotification());
         });
       });

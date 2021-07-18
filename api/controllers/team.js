@@ -138,8 +138,6 @@ module.exports = {
         const teamId = req.params.id
         const team = await Team.findOne({"_id": teamId})
 
-        // console.log(req.body);
-        // await team.set(req.body).save()
         // new value 
         team.teamName= req.body.teamName
         team.teamDescription= req.body.teamDiscription

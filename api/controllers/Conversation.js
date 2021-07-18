@@ -35,27 +35,31 @@ exports.fetchMessagesForCoversation = async (req, res) => {
     .sort("-createdAt")
     .populate([{path: "user", select: "name url"}])
 
+
   res.status(200).send(messages);
+    res.status(200).json({
+      conversation,
+      messages
+    })
 };
 
 exports.check = async (req, res) => {
   let conversation = await Conversation.findOne({
     $or: [{ users: [req.user.id, req.params.userId] }, { users: [req.params.userId, req.user.id] }],
   }); 
-    // if not 404 --- space if okay conut
-  if(!conversation){
+  // if not 404 --- space if okay conut
+  if (!conversation) {
     conversation = await new Conversation({
-      users: [_id, data.to],
+      users: [req.user.id, req.params.userId],
       meta: [
-        { user: _id, countOfUnseenMessages: 0 },
-        { user: data.to, countOfUnseenMessages: 0 },
+        { user: req.user.id, countOfUnseenMessages: 0 },
+        { user: req.params.userId, countOfUnseenMessages: 0 },
       ],
     }).save();
-
     const messages = await Message.find
-    ({"conversation": conversation.id})
-    .sort("-createdAt")
-    .populate([{path: "user", select: "name url"}])
+      ({"conversation": conversation.id})
+      .sort("-createdAt")
+      .populate([{path: "user", select: "name url"}])
     return res.status(200).json({
       conversation,
       messages
