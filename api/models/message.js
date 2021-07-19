@@ -19,7 +19,7 @@ const schema = new mongoose.Schema({
     ref: 'Conversation',
     required: true,
   }
-},{ timestamps: true }
+  },{ timestamps: true }
 );
 
 schema.set("toJSON", {
