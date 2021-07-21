@@ -9,7 +9,8 @@ const {Notification} = require('../models/notification')
 
 module.exports ={
     getAll: async(req, res, next)=>{
-        const [allCalendar] = await Calendar.find({"members":req.user.id})
+        const allCalendar = await Calendar.find({"members":req.user.id})
+        console.log(allCalendar);
         if(allCalendar){
             return res.status(200).json({
                 massage: "All Calendar",
