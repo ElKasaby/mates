@@ -27,4 +27,10 @@ router.get(
   require("../controllers/NotificationCtrl/numberOfUnseen")
 );
 
+// router.get(
+//   "/test",
+//   passportJWT,
+//   require("../controllers/NotificationCtrl/test.js")
+// );
+
 module.exports = router;

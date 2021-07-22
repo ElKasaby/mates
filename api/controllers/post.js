@@ -41,8 +41,9 @@ module.exports ={
         res.status(201).json(newPost)
 
         // Send Notification in-app
-        const clients = await Team.find({_id: req.params.teamId}).populate("teamMember");
-        const targetUsers = clients.map((user) => user.teamMember);
+        const clients = await Team.findOne({_id: req.params.teamId})
+        const targetUsers = clients.teamMember
+        const users = await User.find({_id:{$in:targetUsers}})
         const notification = await new Notification({
             title: "Add post",
             body: `${ownerName} add post in ${clients.teamName} `,
@@ -53,7 +54,7 @@ module.exports ={
         }).save();
   
         // push notifications
-        const receivers = targetUsers;
+        const receivers = users;
         for (let i = 0; i < receivers.length; i++) {
             await receivers[i].sendNotification(
             notification.toFirebaseNotification()

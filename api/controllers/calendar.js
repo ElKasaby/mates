@@ -22,7 +22,7 @@ module.exports ={
         })
     },
     addMeeting: async(req, res, next)=>{
-        const [team]= await Team.find({_id: req.params.teamId})
+        const team= await Team.findOne({_id: req.params.teamId})
         if(!team){
             return res.status(403).send("No team with this id")
         }
@@ -42,13 +42,9 @@ module.exports ={
 
 
         // Send Notification in-app
-        const [clients] = await Team.find({_id: req.params.teamId})
-        // const targetUsers = clients.map((user) => user.teamMember);
-        const targetUsers = []
-        for(var i= 0; i <clients.teamMember.length; i++){
-            targetUsers.push(clients.teamMember[i])
-            // console.log(clients.teamMember[i]);
-        }
+        const clients = await Team.findOne({_id: req.params.teamId})
+        const targetUsers = clients.teamMember
+        const users = await User.find({_id:{$in:targetUsers}})
         // console.log(targetUsers);
         const notification = await new Notification({
             title: "Add calendar",
@@ -59,21 +55,18 @@ module.exports ={
             subject: newCalendar.id ,
         }).save();
   
-        // // push notifications
-        // const receivers = targetUsers;
-        // for (let i = 0; i < receivers.length; i++) {
-        //     await receivers[i].sendNotification(
-        //         notification.toFirebaseNotification()
-        //     );
-        // }
+        // push notifications
+        const receivers = users;
+        for (let i = 0; i < receivers.length; i++) {
+            await receivers[i].sendNotification(
+                notification.toFirebaseNotification()
+            );
+        }
     },
     cancel: async(req, res, next)=>{
-        const [calendar] = await Calendar.find({_id:req.params.calId})
-        const [clients] = await Team.find({_id: calendar.teamId})
-        const targetUsers = []
-        for(var i= 0; i <clients.teamMember.length; i++){
-            targetUsers.push(clients.teamMember[i])
-        }
+        const calendar = await Calendar.findOne({_id:req.params.calId})
+        const clients = await Team.findOne({_id: calendar.teamId})
+        const targetUsers = clients.teamMember
         // await Notification.remove()
         if(calendar){
             if(calendar.ownerId == req.user.id){
@@ -91,6 +84,8 @@ module.exports ={
         })
 
         // Send Notification in-app
+        
+        const users = await User.find({_id:{$in:targetUsers}})
         const notification = await new Notification({
             title: "cancel meeting",
             body: `${req.user.name} cancel this ${clients.meetingName} `,
@@ -100,13 +95,13 @@ module.exports ={
             subject: calendar.teamId ,
         }).save();
   
-        // // push notifications
-        // const receivers = targetUsers;
-        // for (let i = 0; i < receivers.length; i++) {
-        //     await receivers[i].sendNotification(
-        //         notification.toFirebaseNotification()
-        //     );
-        // }
+        // push notifications
+        const receivers = users;
+        for (let i = 0; i < receivers.length; i++) {
+            await receivers[i].sendNotification(
+                notification.toFirebaseNotification()
+            );
+        }
 
     }
 }

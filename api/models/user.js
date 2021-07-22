@@ -1,6 +1,6 @@
 const mongoose = require("mongoose")
 const bcrypt = require('bcryptjs')
-const notificationService = require("./notification");
+const notificationService = require("../../notification");
 
 
 const userSchema = mongoose.Schema({
@@ -110,13 +110,15 @@ userSchema.methods.sendNotification = async function (message) {
   let changed = false;
   let len = this.pushTokens.length;
   while (len--) {
+    // const deviceToken = "drvgAzXa7Ks:APA91bH18yXP5lrid7krCT0NHFWwvKPaDl6hDb3pO0gmu8AZR8bnHVy01tt3Dy3L91hzl7WpM4zxyGtw0AvI8JH9zCGYync7QpeSjy1fdqneQdt1tLA2M5c3dojFJOQI-PePWR6oMfU6"
     const deviceToken = this.pushTokens[len].deviceToken;
     try {
+      console.log(deviceToken);
       console.log("1");
       await notificationService.sendNotification(deviceToken, message);
       console.log("2");
     } catch (error) {
-      // console.log(error);
+      console.log(error);
       this.pushTokens.splice(len, 1);
       changed = true;
     }
