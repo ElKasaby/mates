@@ -16,4 +16,10 @@ router.get(
   conversationCntrl.check
 );
 
+router.delete(
+  "/deleteChat/:conId",
+  passportJWT,
+  conversationCntrl.deleteChat
+);
+
 module.exports = router;

@@ -130,9 +130,9 @@ module.exports = {
         if(!team){
             return res.status(401).send("this team is note exist")
         }
-        await Team.deleteOne({"_id": teamId})
-        await Post.deleteOne({"team": teamId})
-        await File.deleteOne({"team": teamId})
+        await Team.deleteOne({_id: teamId})
+        await Post.deleteMany({team: teamId})
+        await File.deleteMany({team: teamId})
 
         res.status(200).json({
             massage : 'team delete sucussfly'

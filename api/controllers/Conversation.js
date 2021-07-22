@@ -83,13 +83,13 @@ module.exports ={
     })
   },
   deleteChat : async (req, res, next)=>{
-    chat = await Conversation.findOne({_id: req.params.id})
+    chat = await Conversation.findOne({_id: req.params.conId})
     if(!chat){
      return res.status(401).send("this chat does not exist")
     }
-    await Conversation.deleteOne({_id : req.params.id})
-    // await Conversation.deleteOne({_id : req.params.id})
-
+    await Conversation.deleteOne({_id : req.params.conId})
+    await Message.deleteMany({conversation : req.params.conId})
+    res.status(201).send("Deleted")
   }
 }
 
