@@ -8,6 +8,9 @@ const calendarSchema = mongoose.Schema(
     teamName : {
       type: String
     },
+    teamId : {
+      type: String
+    },
     meetingTime : {
       type : String
     },

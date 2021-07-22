@@ -314,5 +314,13 @@ module.exports = {
         })
 
 
+    },
+    deleteAccount : async (req, res, next)=>{
+        const userId = req.user.id
+        await User.deleteOne({"_id": userId})
+        res.status(200).json({
+            massage : 'User deleted sucussfly',
+            user: req.user
+        })
     }
 }

@@ -38,4 +38,6 @@ router.route('/editProfile')
 router.route('/:id/profile')
   .get(passportJWT, UsersController.profile);
 
+router.route('/deleteAccount')
+  .delete(passportJWT, UsersController.deleteAccount);
 module.exports = router

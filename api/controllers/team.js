@@ -1,6 +1,8 @@
 const { json } = require('body-parser')
 const User = require('../models/user')
 const Team = require('../models/team')
+const Post = require('../models/post')
+const File = require('../models/file')
 const cloud = require('../../cloudinary')
 const {Notification} = require('../models/notification')
 const _ = require("lodash")
@@ -128,7 +130,10 @@ module.exports = {
         if(!team){
             return res.status(401).send("this team is note exist")
         }
-        const deleteTeam = await Team.deleteOne({"_id": teamId})
+        await Team.deleteOne({"_id": teamId})
+        await Post.deleteOne({"team": teamId})
+        await File.deleteOne({"team": teamId})
+
         res.status(200).json({
             massage : 'team delete sucussfly'
         })
