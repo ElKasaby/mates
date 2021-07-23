@@ -51,7 +51,7 @@ module.exports ={
             body: `${req.user.name} add calendar in ${clients.teamName} `,
             user: req.user._id,
             targetUsers: targetUsers,
-            subjectType: "Calendar",
+            subjectType: "calendar",
             subject: newCalendar.id ,
         }).save();
   
@@ -65,6 +65,7 @@ module.exports ={
     },
     cancel: async(req, res, next)=>{
         const calendar = await Calendar.findOne({_id:req.params.calId})
+        const id = calendar.teamId
         const clients = await Team.findOne({_id: calendar.teamId})
         const targetUsers = clients.teamMember
         // await Notification.remove()
@@ -92,7 +93,7 @@ module.exports ={
             user: req.user._id,
             targetUsers: targetUsers,
             subjectType: "team",
-            subject: calendar.teamId ,
+            subject: id ,
         }).save();
   
         // push notifications

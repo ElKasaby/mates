@@ -61,6 +61,7 @@ notificationSchema.set("toJSON", {
       user: doc.user,
       icon: doc.icon,
       seen: doc.seen,
+      subject: doc.subject
     };
   },
 });
