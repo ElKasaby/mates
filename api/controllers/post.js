@@ -43,6 +43,7 @@ module.exports ={
         // Send Notification in-app
         const clients = await Team.findOne({_id: req.params.teamId})
         const targetUsers = clients.teamMember
+        targetUsers.splice(targetUsers.indexOf(req.user.id),1)
         const users = await User.find({_id:{$in:targetUsers}})
         const notification = await new Notification({
             title: "Add post",

@@ -44,8 +44,11 @@ module.exports ={
         // Send Notification in-app
         const clients = await Team.findOne({_id: req.params.teamId})
         const targetUsers = clients.teamMember
-        const users = await User.find({_id:{$in:targetUsers}})
         // console.log(targetUsers);
+        targetUsers.splice(targetUsers.indexOf(req.user.id),1)
+        // console.log(targetUsers);
+
+        const users = await User.find({_id:{$in:targetUsers}})
         const notification = await new Notification({
             title: "Add calendar",
             body: `${req.user.name} add calendar in ${clients.teamName} `,
@@ -68,6 +71,8 @@ module.exports ={
         const id = calendar.teamId
         const clients = await Team.findOne({_id: calendar.teamId})
         const targetUsers = clients.teamMember
+        targetUsers.splice(targetUsers.indexOf(req.user.id),1)
+        // console.log(targetUsers);
         // await Notification.remove()
         if(calendar){
             if(calendar.ownerId == req.user.id){
